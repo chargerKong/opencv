@@ -143,7 +143,7 @@ template <typename _Tp> std::ostream& operator<<(std::ostream&, const DualQuat<_
  *
  */
 template <typename _Tp>
-class DualQuat{
+class CV_EXPORTS DualQuat{
     static_assert(std::is_floating_point<_Tp>::value, "Dual quaternion only make sense with type of float or double");
     using value_type = _Tp;
 
@@ -588,7 +588,25 @@ public:
      * @note the type of weights' element should be the same as the date type of dual quaternion inside the dualquat.
      */
     template <int cn>
-    static DualQuat<_Tp> gdqblend(const Vec<DualQuat<_Tp>, cn> &dualquat, InputArray weights,
+    static DualQuat<_Tp> gdqblend(const Vec<DualQuat<_Tp>, cn> &_dualquat, InputArray weights,
+                                QuatAssumeType assumeUnit=QUAT_ASSUME_NOT_UNIT);
+
+    /**
+     * @brief The generalized Dual Quaternion linear Blending works for more than two rigid transformations.
+     * If these transformations are expressed as unit dual quaternions \f$q_1,...,q_n\f$ with convex weights
+     * \f$w = (w_1,...,w_n)\f$, the generalized DQB is simply
+     * \f[
+     * gDQB(\boldsymbol{w};{\boldsymbol{q}}_1,...,{\boldsymbol{q}}_n)=\frac{w_1{\boldsymbol{q}}_1+...+w_n{\boldsymbol{q}}_n}
+     * {||w_1{\boldsymbol{q}}_1+...+w_n{\boldsymbol{q}}_n||}.
+     * \f]
+     * @param dualquat this dual quaternions should have 8 channels and 1 row or 1 col.
+     * @param weights vector of weights, the size of weights should be the same as dualquat, and the weights should
+     * satisfy \f$\sum_0^n w_{i} = 1\f$ and \f$w_i>0\f$.
+     * @param assumeUnit if @ref QUAT_ASSUME_UNIT, these dual quaternions assume to be unit quaternions
+     * and this function will save some computations.
+     * @note the type of weights' element should be the same as the date type of dual quaternion inside the dualquat.
+     */
+    static DualQuat<_Tp> gdqblend(InputArray _dualquat, InputArray weights,
                                 QuatAssumeType assumeUnit=QUAT_ASSUME_NOT_UNIT);
 
     /**
@@ -948,10 +966,27 @@ public:
     template <typename S>
     friend std::ostream& cv::operator<<(std::ostream&, const DualQuat<S>&);
 
+    double dqs();
+
+    void atest(InputArray dq)
+    {
+        std::cout << "abc" << std::endl;
+    }
 };
+
 
 using DualQuatd = DualQuat<double>;
 using DualQuatf = DualQuat<float>;
+
+
+
+class CV_EXPORTS Atest
+{
+public:
+    Atest();
+    int a = 1;
+    void print();
+};
 
 //! @} core
 }//namespace
